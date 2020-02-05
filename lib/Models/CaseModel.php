@@ -43,17 +43,17 @@ class CaseModel extends Model
      * Data related to person or organization receiving
      * the items purchased.
      *
-     * @var Recipient
+     * @var array $recipients Array of Recipient objects
      */
-    public $recipient;
+    public $recipients;
 
     /**
      * Data related to the card that was used for the
      * purchase and its cardholder.
      *
-     * @var Card
+     * @var array $recipients Array of Transaction objects
      */
-    public $card;
+    public $transactions;
 
     /**
      * If you allow customers to create an account before
@@ -67,9 +67,9 @@ class CaseModel extends Model
     /**
      * All data related to the seller of the product.
      *
-     * @var \Signifyd\Models\Seller
+     * @var array $sellers Array of Seller objects
      */
-    public $seller;
+    public $sellers;
 
     /**
      * The class attributes
@@ -78,10 +78,16 @@ class CaseModel extends Model
      */
     protected $fields = [
         'purchase',
-        'recipient',
-        'card',
+        'recipients',
+        'transactions',
         'userAccount',
-        'seller'
+        'sellers'
+    ];
+
+    protected $objectFields = [
+        'recipients',
+        'transactions',
+        'sellers',
     ];
 
     /**
@@ -91,25 +97,40 @@ class CaseModel extends Model
      */
     public function __construct($case = [])
     {
-        // Check if something was passed to the class
-        if (is_array($case) && !empty($case)) {
-            foreach ($this->fields as $field) {
-                // init the class name
-                $class = '\Signifyd\Models\\' . ucfirst($field);
-
-                // make sure no wild data is sent
-                if (array_key_exists($field, $case) === false) {
+        if (!empty($case) && is_array($case)) {
+            foreach ($case as $field => $value) {
+                if (!in_array($field, $this->fields)) {
                     continue;
                 }
 
-                if (is_array($case[$field]) && !empty($case[$field])) {
-                    // instantiate the class
-                    $object = new $class($case[$field]);
-                    $this->{'set' . $field}($object);
-                } elseif ($case[$field] instanceof $class) {
-                    $this->{'set' . $field}($case[$field]);
+                if (in_array($field, $this->objectFields)) {
+                    continue;
+                }
+
+                $this->{'set' . ucfirst($field)}($value);
+            }
+
+            if (isset($case['recipients']) && is_array($case['recipients'])) {
+                foreach ($case['recipients'] as $item) {
+                    $recipient = new Recipient($item);
+                    $this->addRecipient($recipient);
                 }
             }
+
+            if (isset($case['transactions']) && is_array($case['transactions'])) {
+                foreach ($case['transactions'] as $tItem) {
+                    $transaction = new Transaction($tItem);
+                    $this->addTransaction($transaction);
+                }
+            }
+
+            if (isset($case['sellers']) && is_array($case['sellers'])) {
+                foreach ($case['sellers'] as $sItem) {
+                    $seller = new Seller($sItem);
+                    $this->addSeller($seller);
+                }
+            }
+
         }
     }
 
@@ -137,6 +158,42 @@ class CaseModel extends Model
     }
 
     /**
+     * Add recipient to the recipients array
+     *
+     * @param \Signifyd\Models\Recipient $recipient Recipient
+     *
+     * @return void
+     */
+    public function addRecipient($recipient)
+    {
+        $this->recipients[] = $recipient;
+    }
+
+    /**
+     * Add recipient to the recipients array
+     *
+     * @param \Signifyd\Models\Transaction $transaction Transaction
+     *
+     * @return void
+     */
+    public function addTransaction($transaction)
+    {
+        $this->transactions[] = $transaction;
+    }
+
+    /**
+     * Add seller to the sellers array
+     *
+     * @param \Signifyd\Models\Seller $seller Seller
+     *
+     * @return void
+     */
+    public function addSeller($seller)
+    {
+        $this->sellers[] = $seller;
+    }
+
+    /**
      * Get the purchase
      *
      * @return Purchase
@@ -159,47 +216,47 @@ class CaseModel extends Model
     }
 
     /**
-     * Get the recipient
+     * Get a list of recipients
      *
-     * @return Recipient
+     * @return array
      */
-    public function getRecipient()
+    public function getRecipients()
     {
-        return $this->recipient;
+        return $this->recipients;
     }
 
     /**
-     * Set the recipient
+     * Set a list of recipients
      *
-     * @param Recipient $recipient Recipient data
+     * @param array $recipient Array of Recipient
      *
      * @return void
      */
-    public function setRecipient($recipient)
+    public function setRecipients($recipient)
     {
-        $this->recipient = $recipient;
+        $this->recipients = $recipient;
     }
 
     /**
-     * Get the card data
+     * Get a list of transactions
      *
-     * @return Card
+     * @return array
      */
-    public function getCard()
+    public function getTransactions()
     {
-        return $this->card;
+        return $this->transactions;
     }
 
     /**
-     * Set the card data
+     * Set a list of transactions
      *
-     * @param Card $card Card data
+     * @param array $transactions Array of Transaction
      *
      * @return void
      */
-    public function setCard($card)
+    public function setTransactions($transactions)
     {
-        $this->card = $card;
+        $this->transactions = $transactions;
     }
 
     /**
@@ -225,24 +282,24 @@ class CaseModel extends Model
     }
 
     /**
-     * Get the seller
+     * Get a list of sellers
      *
-     * @return Seller
+     * @return array
      */
-    public function getSeller()
+    public function getSellers()
     {
-        return $this->seller;
+        return $this->sellers;
     }
 
     /**
-     * Set the seller
+     * Set a list of sellers
      *
-     * @param Seller $seller Seller data
+     * @param array $sellers Array of Seller
      *
      * @return void
      */
-    public function setSeller($seller)
+    public function setSellers($sellers)
     {
-        $this->seller = $seller;
+        $this->sellers = $sellers;
     }
 }
