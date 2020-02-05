@@ -2,7 +2,6 @@
   "name": "bladeodessa/signifyd-php",
   "description": "Signifyd client API plugin for PHP",
   "type": "library",
-  "minimum-stability": "dev",
   "license": [
     "MIT"
   ],
