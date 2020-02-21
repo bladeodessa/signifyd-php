@@ -147,11 +147,17 @@ class CaseModel extends Model
             if (null === $obj) {
                 continue;
             }
-
-            $objValid = $obj->validate();
-            if (true !== $objValid) {
-                $valid[] = $objValid;
+            if (!is_array($obj)) {
+                $obj = [$obj];
             }
+
+            foreach ($obj as $objItem) {
+                $objValid = $objItem->validate();
+                if (true !== $objValid) {
+                    $valid[] = $objValid;
+                }
+            }
+
         }
 
         return (!isset($valid[0]))? true : $valid;
