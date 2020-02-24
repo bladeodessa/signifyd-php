@@ -75,6 +75,16 @@ class Settings
      */
     public $logEnabled = true;
 
+    /*
+     * The name of the log file
+     */
+    public $logFileName = 'signifyd_connect.log';
+
+    /*
+     * The location of the log file
+     */
+    public $logLocation = '.';
+
     /**
      * Settings constructor.
      *
@@ -245,6 +255,38 @@ class Settings
     public function setLogEnabled($logEnabled)
     {
         $this->logEnabled = $logEnabled;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogFileName()
+    {
+        return $this->logFileName;
+    }
+
+    /**
+     * @param string $logFileName
+     */
+    public function setLogFileName($logFileName)
+    {
+        $this->logFileName = $logFileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogLocation()
+    {
+        return $this->logLocation;
+    }
+
+    /**
+     * @param string $logLocation
+     */
+    public function setLogLocation($logLocation)
+    {
+        $this->logLocation = $logLocation;
     }
 
 }

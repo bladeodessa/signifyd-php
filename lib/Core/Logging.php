@@ -68,6 +68,8 @@ class Logging
         }
 
         $this->settings = $settings;
+        $this->logLocation = $this->settings->getLogLocation();
+        $this->logFileName = $this->settings->getLogFileName();
         $this->logger = new Logger('Signifyd PHP Library');
         $this->initLogs();
     }
